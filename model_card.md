@@ -2,8 +2,7 @@
 
 ## 1. Model Name  
 
-Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+**VibeFinder 1.0**
 
 ---
 
@@ -11,11 +10,7 @@ Example: **VibeFinder 1.0**
 
 Describe what your recommender is designed to do and who it is for. 
 
-Prompts:  
-
-- What kind of recommendations does it generate  
-- What assumptions does it make about the user  
-- Is this for real users or classroom exploration  
+VibeFinder suggests up to 5 songs from a small catalog based on a user's genre, mood, energy level, and acoustic preference. It assumes the user has one favorite genre and mood. 
 
 ---
 
@@ -23,14 +18,7 @@ Prompts:
 
 Explain your scoring approach in simple language.  
 
-Prompts:  
-
-- What features of each song are used (genre, energy, mood, etc.)  
-- What user preferences are considered  
-- How does the model turn those into a score  
-- What changes did you make from the starter logic  
-
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
+Every song has a genre, mood, energy level, and acoustic feel — all stored as numbers between 0 and 1. The system compares each song to what the user likes and gives it a score. Genre match is worth the most, then mood, then how close the energy is, then acoustic preference. The top 5 scores win. I also added an explanation for each result so the user can see why a song was picked.
 
 ---
 
@@ -38,12 +26,7 @@ Avoid code here. Pretend you are explaining the idea to a friend who does not pr
 
 Describe the dataset the model uses.  
 
-Prompts:  
-
-- How many songs are in the catalog  
-- What genres or moods are represented  
-- Did you add or remove data  
-- Are there parts of musical taste missing in the dataset  
+The system runs on a catalog of 18 songs. It covers 15 genres and 13 moods, but most genres have only 1 song — lofi and pop are the most represented. The data skews toward a Western, English-language taste profile. Tempo is stored but not used in scoring. Lyrics, key, and artist popularity are missing entirely.
 
 ---
 
@@ -51,11 +34,7 @@ Prompts:
 
 Where does your system seem to work well  
 
-Prompts:  
-
-- User types for which it gives reasonable results  
-- Any patterns you think your scoring captures correctly  
-- Cases where the recommendations matched your intuition  
+It works best for users whose genre and mood are well-covered in the catalog — the lofi/chill and pop/happy profiles both returned results that felt accurate. The scoring is also fully transparent: each recommendation comes with a plain-language explanation, so it's easy to see exactly why a song was ranked where it was.
 
 ---
 
@@ -63,12 +42,7 @@ Prompts:
 
 Where the system struggles or behaves unfairly. 
 
-Prompts:  
-
-- Features it does not consider  
-- Genres or moods that are underrepresented  
-- Cases where the system overfits to one preference  
-- Ways the scoring might unintentionally favor some users  
+When the "Unknown Genre" profile was tested with a genre not present in the catalog (bossa nova), the genre bonus never activated and all recommendations were driven entirely by mood and energy proximity. This means a user with a niche or unlisted genre preference receives the same results as a user with no genre preference at all. At scale, this would under-serve listeners whose tastes fall outside the catalog's represented genres. It also means two users with very different genre preferences but similar energy levels would receive nearly identical recommendations, making the system appear personalized when it is not.
 
 ---
 
@@ -76,14 +50,7 @@ Prompts:
 
 How you checked whether the recommender behaved as expected. 
 
-Prompts:  
-
-- Which user profiles you tested  
-- What you looked for in the recommendations  
-- What surprised you  
-- Any simple tests or comparisons you ran  
-
-No need for numeric metrics unless you created some.
+Six profiles were tested — three standard, three adversarial — and top 5 results were checked against intuition. Standard profiles produced expected results. The "All Midpoints" profile was the most surprising: with energy scores clustered, ranking felt arbitrary. A weight-shift experiment (genre halved, energy doubled) confirmed the original genre weight was burying cross-genre matches with strong energy alignment.
 
 ---
 
@@ -91,21 +58,19 @@ No need for numeric metrics unless you created some.
 
 Ideas for how you would improve the model next.  
 
-Prompts:  
-
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
+- Add tempo range as a preference (e.g., user likes 70–90 BPM).
+- Enforce diversity so not all 5 results come from the same genre.
+- Support a "neutral" acoustic option instead of a binary yes/no.
+- Expand the catalog — most genres have only 1 song, which makes the system feel unreliable for niche tastes.
 
 ---
 
 ## 9. Personal Reflection  
 
-A few sentences about your experience.  
+My biggest learning moment was realizing that bias doesn't come from bad code — it comes from silent assumptions. When I tested the "Unknown Genre" profile, the system ran perfectly but completely failed the user. That gap between "technically correct" and "actually useful" is something I didn't expect to feel so clearly in a project this small.
 
-Prompts:  
+Using AI tools helped me move quickly, especially for scaffolding the scoring logic and writing explanations. However, I had to double-check things like the overall content of the explanations and code — the AI confidently said "20–30 songs" when the actual answer was 18. Verifying against the real CSV was a good reminder that generated answers are not grounded in the actual data.
 
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+What surprised me most was how much the simple scoring formula felt like a real recommendation. The lofi/chill profile returned results that genuinely seemed right, even though the system has no understanding of music at all. It made me realize why users trust recommendation systems even when those systems are doing something much simpler than people assume.
+
+If I extended this project, I'd add tempo as an additional feature and experiment with enforcing diversity (forcing the top 5 to span at least 2–3 genres). I'd also want to try a feedback loop where the user can thumbs-up/down a result and the weights adjust over time.

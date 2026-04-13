@@ -41,10 +41,10 @@ class Recommender:
         """Return a weighted match score (max 4.5) between a song and a user profile."""
         score = 0.0
         if song.genre == user.favorite_genre:
-            score += 2.0
+            score += 1.0
         if song.mood == user.favorite_mood:
             score += 1.0
-        score += 1.0 - abs(song.energy - user.target_energy)
+        score += 2.0 * (1.0 - abs(song.energy - user.target_energy))
         score += song.acousticness * 0.5 if user.likes_acoustic else (1.0 - song.acousticness) * 0.5
         return score
 
